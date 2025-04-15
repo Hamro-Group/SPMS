@@ -37,3 +37,37 @@ password_label.pack(pady=10)
 
 form_ii = Entry(project, show="*", width=35, font=("Helvetica", 12))
 form_ii.pack(pady=10)
+
+# --- LOGIN FUNCTION ---
+def trigger():
+    f1 = form.get()
+    f2 = form_ii.get()
+
+    try:
+        with open("student_data/users.txt", "r") as user_file:
+            lines = user_file.readlines()
+            for line in lines:
+                stored_user, stored_pass = line.strip().split(",")
+                if f1 == stored_user and f2 == stored_pass:
+                    messagebox.showinfo("Success", "Login Successful")
+                    new_window()
+                    return
+            messagebox.showerror("Error", "Invalid Username or Password")
+    except FileNotFoundError:
+        messagebox.showerror("Error", "No users found. Please register first.")
+
+
+# --- MAIN MENU AFTER LOGIN ---
+def new_window():
+    win = Toplevel()
+    win.minsize(300, 200)
+    win.maxsize(300, 200)
+    win.configure(background="#1e1e1e")
+
+    btn_eca = Button(win, width=12, height=2, text="ECA", fg="#ffffff", bg="#008080",
+                     font=("Helvetica", 12, "bold"), command=trigger_eca)
+    btn_eca.pack(pady=15)
+
+    btn_grades = Button(win, width=12, height=2, text="Grades", fg="#ffffff", bg="#008080",
+                        font=("Helvetica", 12, "bold"), command=trigger_grades)
+    btn_grades.pack(pady=15)
