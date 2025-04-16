@@ -174,3 +174,5 @@ register_button = Button(
     command=open_register_window
 )
 register_button.pack(pady=10)
+
+project.mainloop()
