@@ -1,0 +1,4 @@
+Maths = 50
+Nepali = 60
+English = 70
+Science = 90
