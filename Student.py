@@ -5,12 +5,9 @@ import os
 # Create student_data directory
 os.makedirs("student_data", exist_ok=True)
 
-# Default credentials (for initial testing)
-with open("student_data/id.txt", "w") as f:
-    f.write("nirajannami@gmail.com")
-
-with open("student_data/password.txt", "w") as f:
-    f.write("Nirajan")
+# Write default test credentials into users.txt (not id.txt & password.txt)
+with open("student_data/users.txt", "w") as f:
+    f.write("nirajannami@gmail.com,Nirajan\n")
 
 # Main window
 project = Tk()
@@ -88,7 +85,7 @@ def open_register_window():
     Button(reg_win, text="Register", command=register_user, bg="#4CAF50", fg="white",
            font=("Helvetica", 12, "bold"), width=12).pack(pady=20)
 
-    # --- MAIN MENU AFTER LOGIN ---
+# --- MAIN MENU AFTER LOGIN ---
 def new_window():
     win = Toplevel()
     win.minsize(300, 200)
@@ -103,7 +100,7 @@ def new_window():
                         font=("Helvetica", 12, "bold"), command=trigger_grades)
     btn_grades.pack(pady=15)
 
-    # --- ECA DISPLAY ---
+# --- ECA DISPLAY ---
 def trigger_eca():
     eca = Toplevel()
     eca.minsize(300, 200)
