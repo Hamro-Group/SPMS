@@ -56,8 +56,39 @@ def trigger():
     except FileNotFoundError:
         messagebox.showerror("Error", "No users found. Please register first.")
 
+# --- REGISTER FUNCTION ---
+def open_register_window():
+    reg_win = Toplevel()
+    reg_win.title("Register New User")
+    reg_win.geometry("400x300")
+    reg_win.configure(background="#2e2e2e")
 
-# --- MAIN MENU AFTER LOGIN ---
+    Label(reg_win, text="New Username:", fg="white", bg="#2e2e2e", font=("Helvetica", 12)).pack(pady=10)
+    new_user_entry = Entry(reg_win, font=("Helvetica", 12))
+    new_user_entry.pack(pady=5)
+
+    Label(reg_win, text="New Password:", fg="white", bg="#2e2e2e", font=("Helvetica", 12)).pack(pady=10)
+    new_pass_entry = Entry(reg_win, show="*", font=("Helvetica", 12))
+    new_pass_entry.pack(pady=5)
+
+    def register_user():
+        new_user = new_user_entry.get().strip()
+        new_pass = new_pass_entry.get().strip()
+
+        if not new_user or not new_pass:
+            messagebox.showerror("Error", "Please fill in both fields.")
+            return
+
+        with open("student_data/users.txt", "a") as user_file:
+            user_file.write(f"{new_user},{new_pass}\n")
+
+        messagebox.showinfo("Success", "User Registered Successfully!")
+        reg_win.destroy()
+
+    Button(reg_win, text="Register", command=register_user, bg="#4CAF50", fg="white",
+           font=("Helvetica", 12, "bold"), width=12).pack(pady=20)
+
+    # --- MAIN MENU AFTER LOGIN ---
 def new_window():
     win = Toplevel()
     win.minsize(300, 200)
