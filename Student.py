@@ -102,3 +102,75 @@ def new_window():
     btn_grades = Button(win, width=12, height=2, text="Grades", fg="#ffffff", bg="#008080",
                         font=("Helvetica", 12, "bold"), command=trigger_grades)
     btn_grades.pack(pady=15)
+
+    # --- ECA DISPLAY ---
+def trigger_eca():
+    eca = Toplevel()
+    eca.minsize(300, 200)
+    eca.maxsize(300, 200)
+    eca.configure(background="#1e1e1e")
+
+    try:
+        with open("student_data/eca.txt", "r") as eca_data:
+            std_eca = eca_data.read()
+    except FileNotFoundError:
+        std_eca = "No ECA data found."
+
+    eca_label = Label(eca, text=std_eca, fg="#ffffff", bg="#1e1e1e", font=("Helvetica", 12))
+    eca_label.pack(pady=20)
+
+# --- GRADES DISPLAY ---
+def trigger_grades():
+    grades = Toplevel()
+    grades.title("Grades")
+    grades.minsize(350, 250)
+    grades.maxsize(400, 300)
+    grades.configure(background="#1e1e1e")
+
+    try:
+        with open("student_data/grades.txt", "r") as grades_data:
+            grades_content = grades_data.read()
+    except FileNotFoundError:
+        grades_content = "⚠️ No Grades data found."
+
+    grades_label = Label(
+        grades,
+        text=grades_content,
+        fg="#f0f0f0",
+        bg="#1e1e1e",
+        font=("Segoe UI", 12, "bold"),
+        justify="left",
+        wraplength=320
+    )
+    grades_label.pack(padx=20, pady=25, anchor="w")
+
+# --- BUTTONS ---
+submit_button = Button(
+    project,
+    text="Login",
+    width=14,
+    height=2,
+    fg="#ffffff",
+    bg="#4CAF50",
+    activebackground="#45a049",
+    activeforeground="#ffffff",
+    font=("Segoe UI", 13, "bold"),
+    borderwidth=0,
+    relief="flat",
+    command=trigger
+)
+submit_button.pack(pady=20)
+
+register_button = Button(
+    project,
+    text="Register New User",
+    width=20,
+    height=2,
+    fg="#ffffff",
+    bg="#2196F3",
+    activebackground="#1976D2",
+    activeforeground="#ffffff",
+    font=("Segoe UI", 12, "bold"),
+    command=open_register_window
+)
+register_button.pack(pady=10)
