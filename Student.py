@@ -5,7 +5,7 @@ import os
 # Create student_data directory
 os.makedirs("student_data", exist_ok=True)
 
-# Write default test credentials into users.txt (not id.txt & password.txt)
+# Write default test credentials into users.txt
 with open("student_data/users.txt", "w") as f:
     f.write("nirajannami@gmail.com,Nirajan\n")
 
@@ -13,163 +13,137 @@ with open("student_data/users.txt", "w") as f:
 project = Tk()
 project.title("Student Login System")
 project.geometry("850x600")
-project.resizable(False, False)
 project.configure(background="#1a1a2e")
 project.option_add("*Font", ("Segoe UI", 11))
 
-# Header
-head = Label(project, text="Student Login System", fg="#00cccc", bg="#121212", font=("Helvetica", 28, "bold"))
-head.pack(pady=30)
+# --- FUNCTION TO SWITCH SCREENS ---
+def show_screen(frame):
+    for widget in project.winfo_children():
+        widget.pack_forget()
+    frame.pack(fill="both", expand=True)
 
-# Username input
-username_label = Label(project, text="Enter Username", fg="#ffffff", bg="#121212", font=("Helvetica", 14))
-username_label.pack(pady=10)
+# --- LOGIN SCREEN ---
+login_frame = Frame(project, bg="#1a1a2e")
 
-form = Entry(project, width=35, font=("Helvetica", 12))
-form.pack(pady=10)
+Label(login_frame, text="Student Login System", fg="#00cccc", bg="#1a1a2e",
+      font=("Helvetica", 28, "bold")).pack(pady=30)
 
-# Password input
-password_label = Label(project, text="Enter Password", fg="#ffffff", bg="#121212", font=("Helvetica", 14))
-password_label.pack(pady=10)
+Label(login_frame, text="Enter Username", fg="#ffffff", bg="#1a1a2e", font=("Helvetica", 14)).pack(pady=10)
+login_user = Entry(login_frame, width=35, font=("Helvetica", 12))
+login_user.pack(pady=5)
 
-form_ii = Entry(project, show="*", width=35, font=("Helvetica", 12))
-form_ii.pack(pady=10)
+Label(login_frame, text="Enter Password", fg="#ffffff", bg="#1a1a2e", font=("Helvetica", 14)).pack(pady=10)
+login_pass = Entry(login_frame, show="*", width=35, font=("Helvetica", 12))
+login_pass.pack(pady=5)
 
-# --- LOGIN FUNCTION ---
-def trigger():
-    f1 = form.get()
-    f2 = form_ii.get()
+def login():
+    user = login_user.get().strip()
+    pwd = login_pass.get().strip()
 
     try:
-        with open("student_data/users.txt", "r") as user_file:
-            lines = user_file.readlines()
-            for line in lines:
-                stored_user, stored_pass = line.strip().split(",")
-                if f1 == stored_user and f2 == stored_pass:
+        with open("student_data/users.txt", "r") as f:
+            for line in f:
+                u, p = line.strip().split(",")
+                if user == u and pwd == p:
                     messagebox.showinfo("Success", "Login Successful")
-                    new_window()
+                    show_screen(main_menu_frame)
                     return
             messagebox.showerror("Error", "Invalid Username or Password")
     except FileNotFoundError:
-        messagebox.showerror("Error", "No users found. Please register first.")
+        messagebox.showerror("Error", "User database not found.")
 
-# --- REGISTER FUNCTION ---
-def open_register_window():
-    reg_win = Toplevel()
-    reg_win.title("Register New User")
-    reg_win.geometry("400x300")
-    reg_win.configure(background="#2e2e2e")
+Button(login_frame, text="Login", command=login, width=14, height=2, fg="#ffffff", bg="#4CAF50",
+       font=("Segoe UI", 13, "bold")).pack(pady=20)
 
-    Label(reg_win, text="New Username:", fg="white", bg="#2e2e2e", font=("Helvetica", 12)).pack(pady=10)
-    new_user_entry = Entry(reg_win, font=("Helvetica", 12))
-    new_user_entry.pack(pady=5)
+Button(login_frame, text="Register New User", command=lambda: show_screen(register_frame),
+       width=20, height=2, fg="#ffffff", bg="#2196F3", font=("Segoe UI", 12, "bold")).pack(pady=10)
 
-    Label(reg_win, text="New Password:", fg="white", bg="#2e2e2e", font=("Helvetica", 12)).pack(pady=10)
-    new_pass_entry = Entry(reg_win, show="*", font=("Helvetica", 12))
-    new_pass_entry.pack(pady=5)
+# --- REGISTER SCREEN ---
+register_frame = Frame(project, bg="#1a1a2e")
 
-    def register_user():
-        new_user = new_user_entry.get().strip()
-        new_pass = new_pass_entry.get().strip()
+Label(register_frame, text="Register New User", fg="#00cccc", bg="#1a1a2e",
+      font=("Helvetica", 24, "bold")).pack(pady=30)
 
-        if not new_user or not new_pass:
-            messagebox.showerror("Error", "Please fill in both fields.")
-            return
+Label(register_frame, text="New Username", fg="#ffffff", bg="#1a1a2e", font=("Helvetica", 14)).pack(pady=10)
+reg_user = Entry(register_frame, width=35, font=("Helvetica", 12))
+reg_user.pack(pady=5)
 
-        with open("student_data/users.txt", "a") as user_file:
-            user_file.write(f"{new_user},{new_pass}\n")
+Label(register_frame, text="New Password", fg="#ffffff", bg="#1a1a2e", font=("Helvetica", 14)).pack(pady=10)
+reg_pass = Entry(register_frame, show="*", width=35, font=("Helvetica", 12))
+reg_pass.pack(pady=5)
 
-        messagebox.showinfo("Success", "User Registered Successfully!")
-        reg_win.destroy()
+def register_user():
+    user = reg_user.get().strip()
+    pwd = reg_pass.get().strip()
 
-    Button(reg_win, text="Register", command=register_user, bg="#4CAF50", fg="white",
-           font=("Helvetica", 12, "bold"), width=12).pack(pady=20)
+    if not user or not pwd:
+        messagebox.showerror("Error", "All fields required.")
+        return
 
-# --- MAIN MENU AFTER LOGIN ---
-def new_window():
-    win = Toplevel()
-    win.minsize(300, 200)
-    win.maxsize(300, 200)
-    win.configure(background="#1e1e1e")
+    with open("student_data/users.txt", "a") as f:
+        f.write(f"{user},{pwd}\n")
 
-    btn_eca = Button(win, width=12, height=2, text="ECA", fg="#ffffff", bg="#008080",
-                     font=("Helvetica", 12, "bold"), command=trigger_eca)
-    btn_eca.pack(pady=15)
+    messagebox.showinfo("Success", "User Registered Successfully!")
+    reg_user.delete(0, END)
+    reg_pass.delete(0, END)
+    show_screen(login_frame)
 
-    btn_grades = Button(win, width=12, height=2, text="Grades", fg="#ffffff", bg="#008080",
-                        font=("Helvetica", 12, "bold"), command=trigger_grades)
-    btn_grades.pack(pady=15)
+Button(register_frame, text="Register", command=register_user, bg="#4CAF50", fg="white",
+       font=("Helvetica", 12, "bold"), width=12).pack(pady=20)
 
-# --- ECA DISPLAY ---
-def trigger_eca():
-    eca = Toplevel()
-    eca.minsize(300, 200)
-    eca.maxsize(300, 200)
-    eca.configure(background="#1e1e1e")
+Button(register_frame, text="Back to Login", command=lambda: show_screen(login_frame),
+       bg="#FF5722", fg="white", font=("Helvetica", 12), width=14).pack()
 
-    try:
-        with open("student_data/eca.txt", "r") as eca_data:
-            std_eca = eca_data.read()
-    except FileNotFoundError:
-        std_eca = "No ECA data found."
+# --- MAIN MENU SCREEN ---
+main_menu_frame = Frame(project, bg="#1a1a2e")
 
-    eca_label = Label(eca, text=std_eca, fg="#ffffff", bg="#1e1e1e", font=("Helvetica", 12))
-    eca_label.pack(pady=20)
+Label(main_menu_frame, text="Main Menu", fg="#00cccc", bg="#1a1a2e", font=("Helvetica", 26, "bold")).pack(pady=30)
 
-# --- GRADES DISPLAY ---
-def trigger_grades():
-    grades = Toplevel()
-    grades.title("Grades")
-    grades.minsize(350, 250)
-    grades.maxsize(400, 300)
-    grades.configure(background="#1e1e1e")
+Button(main_menu_frame, text="ECA", command=lambda: show_screen(eca_frame),
+       width=14, height=2, fg="white", bg="#008080", font=("Helvetica", 12, "bold")).pack(pady=15)
 
-    try:
-        with open("student_data/grades.txt", "r") as grades_data:
-            grades_content = grades_data.read()
-    except FileNotFoundError:
-        grades_content = "⚠️ No Grades data found."
+Button(main_menu_frame, text="Grades", command=lambda: show_screen(grades_frame),
+       width=14, height=2, fg="white", bg="#008080", font=("Helvetica", 12, "bold")).pack(pady=15)
 
-    grades_label = Label(
-        grades,
-        text=grades_content,
-        fg="#f0f0f0",
-        bg="#1e1e1e",
-        font=("Segoe UI", 12, "bold"),
-        justify="left",
-        wraplength=320
-    )
-    grades_label.pack(padx=20, pady=25, anchor="w")
+Button(main_menu_frame, text="Logout", command=lambda: show_screen(login_frame),
+       width=14, height=2, fg="white", bg="#f44336", font=("Helvetica", 12, "bold")).pack(pady=25)
 
-# --- BUTTONS ---
-submit_button = Button(
-    project,
-    text="Login",
-    width=14,
-    height=2,
-    fg="#ffffff",
-    bg="#4CAF50",
-    activebackground="#45a049",
-    activeforeground="#ffffff",
-    font=("Segoe UI", 13, "bold"),
-    borderwidth=0,
-    relief="flat",
-    command=trigger
-)
-submit_button.pack(pady=20)
+# --- ECA SCREEN ---
+eca_frame = Frame(project, bg="#1a1a2e")
 
-register_button = Button(
-    project,
-    text="Register New User",
-    width=20,
-    height=2,
-    fg="#ffffff",
-    bg="#2196F3",
-    activebackground="#1976D2",
-    activeforeground="#ffffff",
-    font=("Segoe UI", 12, "bold"),
-    command=open_register_window
-)
-register_button.pack(pady=10)
+Label(eca_frame, text="Extra Curricular Activities", fg="#00cccc", bg="#1a1a2e",
+      font=("Helvetica", 20, "bold")).pack(pady=20)
 
+try:
+    with open("student_data/eca.txt", "r") as f:
+        eca_data = f.read()
+except FileNotFoundError:
+    eca_data = "No ECA data available."
+
+Label(eca_frame, text=eca_data, fg="white", bg="#1a1a2e", font=("Helvetica", 13),
+      wraplength=700, justify="left").pack(pady=10)
+
+Button(eca_frame, text="Back", command=lambda: show_screen(main_menu_frame),
+       bg="#FF5722", fg="white", font=("Helvetica", 12), width=12).pack(pady=20)
+
+# --- GRADES SCREEN ---
+grades_frame = Frame(project, bg="#1a1a2e")
+
+Label(grades_frame, text="Grades", fg="#00cccc", bg="#1a1a2e",
+      font=("Helvetica", 20, "bold")).pack(pady=20)
+
+try:
+    with open("student_data/grades.txt", "r") as f:
+        grades_data = f.read()
+except FileNotFoundError:
+    grades_data = "No Grades available."
+
+Label(grades_frame, text=grades_data, fg="white", bg="#1a1a2e", font=("Helvetica", 13),
+      wraplength=700, justify="left").pack(pady=10)
+
+Button(grades_frame, text="Back", command=lambda: show_screen(main_menu_frame),
+       bg="#FF5722", fg="white", font=("Helvetica", 12), width=12).pack(pady=20)
+
+# Start with login screen
+show_screen(login_frame)
 project.mainloop()
